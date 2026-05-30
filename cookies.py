@@ -1,2 +1,1 @@
-cok = "ig_did=3AEF7CCA-03ED-49F3-85BF-A83DB8571EAA; datr=mpwAaZYtHc3lGK1oCidj30Ot; dpr=1.712499976158142; mid=aQCcmgABAAGXFN_nhO7vJC0k0AUf; ps_l=1; ps_n=1; ig_nrcb=1; wd=420x895; csrftoken=O2F04BLnv5mEOuSKKED3SHre779ZxUTf; sessionid=52454925232%3AfFv8vsadajWBPR%3A20%3AAYhnglqza4f9rGuX_qE28opSKBacUbbGoTNEnzwJ5g
-"
+cok = "ig_did=3AEF7CCA-03ED-49F3-85BF-A83DB8571EAA; datr=mpwAaZYtHc3lGK1oCidj30Ot; dpr=1.712499976158142; mid=aQCcmgABAAGXFN_nhO7vJC0k0AUf; ps_l=1; ps_n=1; ig_nrcb=1; wd=420x895; csrftoken=O2F04BLnv5mEOuSKKED3SHre779ZxUTf; sessionid=52454925232%3AfFv8vsadajWBPR%3A20%3AAYhnglqza4f9rGuX_qE28opSKBacUbbGoTNEnzwJ5g"
