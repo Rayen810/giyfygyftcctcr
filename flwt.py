@@ -49,6 +49,15 @@ accounts = [
 #;
 
 
+"belgacem_adem|adem12345",
+"ilyes4428|ilyes12345",
+"ahmed.aloui07|ahmed1234",
+"mohamedhediferjeni|ferjeni1234567",
+"omar316133|omaromar",
+"md_aziz_madini|aziz aziz",
+"gharbi3833|gharbi gharbi",
+
+
 "spider__tunsi|feres123456",
 "youssef.zayet|youssef1234567",
 "dali.hamrita.14|dali123456789",
