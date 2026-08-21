@@ -44,6 +44,7 @@ LOGIN_PAGES = [
 
 accounts = [
     "khaled__nasrii|khaled12345",
+    "wassim__khdhraoui|wassimwassim",
     "chaabeni09|saifsaif",
     "makremfakroui|makrem123",
     "wajdi_pazzo|wajdi wajdi",
