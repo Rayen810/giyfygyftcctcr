@@ -7,6 +7,7 @@ import json
 import re
 import random
 import threading
+from requests.exceptions import RequestException
 
 warnings.filterwarnings("ignore", category=requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
@@ -22,7 +23,6 @@ def send_telegram_notification(text):
         print(f"Telegram notification failed: {e}")
 
 LOGIN_PAGES = [
-    #"https://takipzan.com/login2",
     "https://fastfollow.in/member",
     "https://takipcikrali.com/login",
     "https://takipcimx.net/login",
@@ -30,31 +30,25 @@ LOGIN_PAGES = [
     "https://takipcigen.com/login",
     "https://bigtakip.net/login",
     "https://takipcitime.net/login",
-   # "https://followersize.net/login",
     "https://birtakipci.net/login",
     "https://mixtakip.com/login",
     "https://takipcitime.com/login",
     "https://birtakipci.com/member",
     "https://takipcibase.com/login",
-    "https://takip88.com/login",#15
+    "https://takip88.com/login",
     "https://followersize.com/member",
     "https://medyahizmeti.com/member",
     "https://www.hepsitakipci.com/member",
-   # "https://instamoda.org/login",
-  #  "https://takipcimx.com/member",
     "https://takipcimax.com/login",
 ]
 
 accounts = [
-"khaled__nasrii|khaled12345",
-"chaabeni09|saifsaif",
-"wajdi_pazzo|wajdi wajdi",
-"a.z.i.zzzzz|aziz123456",
-"ziedaboussaad|zied123",
-"jlassi.bassem.1|bassembassem",
-#::
-
-
+    "khaled__nasrii|khaled12345",
+    "chaabeni09|saifsaif",
+    "wajdi_pazzo|wajdi wajdi",
+    "a.z.i.zzzzz|aziz123456",
+    "ziedaboussaad|zied123",
+    "jlassi.bassem.1|bassembassem",
 ]
 
 random.shuffle(LOGIN_PAGES)
@@ -71,53 +65,64 @@ def run(target_username, log_callback=None, stop_check=None):
         log("No target username")
         return
 
-    # إرسال رسالة البدء
     send_telegram_notification(f"✅---Started Followers tool for @{target_username}")
-
     log(f"Target: {target_username}")
     cycle = 0
 
-    # ----- خيط heartbeat -----
     heartbeat_stop = threading.Event()
     def heartbeat_worker():
-        while not heartbeat_stop.wait(300):  # انتظر 5 دقائق أو حتى يتم الإشارة
+        while not heartbeat_stop.wait(300):
             send_telegram_notification(f"🔄 المستخدم لايزال يضيف لـ @{target_username}")
-
     heartbeat_thread = threading.Thread(target=heartbeat_worker, daemon=True)
     heartbeat_thread.start()
 
-    # ----- ضمان إرسال رسالة التوقف عند الخروج من الدالة -----
     try:
         while True:
             if stop_check and stop_check():
                 log("\n Stop requested. Exiting tool.")
-                return  # سيتم التقاطه في finally
+                return
 
             cycle += 1
             log(f"\n--- Cycle {cycle} ---")
             for site_idx, login_url in enumerate(LOGIN_PAGES, 1):
                 if stop_check and stop_check():
                     return
-                log(f"→ Waiting {site_idx}")
+                log(f"→ Waiting {site_idx}. +. n7bk ya twflaaa :)")
                 for acc_idx, acc in enumerate(accounts, 1):
                     if stop_check and stop_check():
                         return
-                    log(f"  -Account {acc_idx}")
+                    log(f"  -V {acc_idx}")
                     try:
                         username, password = [x.strip() for x in acc.split("|")]
                         session = requests.Session()
                         session.verify = False
                         login_data = {"username": username, "password": password}
-                        resp_login = session.post(login_url, data=login_data, timeout=30)
+
+                        # محاولة تسجيل الدخول مع معالجة خطأ الاتصال
+                        try:
+                            resp_login = session.post(login_url, data=login_data, timeout=30)
+                        except RequestException:
+                            log("    Connection error during login")
+                            continue
+
                         if resp_login.status_code != 200:
                             log("    Login failed")
                             continue
+
                         base_url = "/".join(login_url.split("/")[:3])
                         send_follower_url = f"{base_url}/tools/send-follower"
-                        resp_page = session.get(send_follower_url, timeout=30)
+
+                        # محاولة الوصول إلى صفحة الإرسال
+                        try:
+                            resp_page = session.get(send_follower_url, timeout=30)
+                        except RequestException:
+                            log("    Connection error accessing send page")
+                            continue
+
                         if resp_page.status_code != 200:
                             log("    Cannot access send page")
                             continue
+
                         soup = BeautifulSoup(resp_page.text, "html.parser")
                         form = None
                         for f in soup.find_all("form"):
@@ -128,23 +133,34 @@ def run(target_username, log_callback=None, stop_check=None):
                         if not form:
                             log("    Form not found")
                             continue
+
                         action = form.get("action") or send_follower_url
                         if not action.startswith("http"):
                             action = urljoin(send_follower_url, action)
+
                         post_data = {}
                         for inp in form.find_all(["input", "textarea"]):
                             name = inp.get("name")
                             if name:
                                 post_data[name] = inp.get("value", "")
                         post_data["username"] = target_username
-                        resp_submit = session.post(action, data=post_data, timeout=30)
+
+                        # محاولة إرسال بيانات البحث
+                        try:
+                            resp_submit = session.post(action, data=post_data, timeout=30)
+                        except RequestException:
+                            log("    Connection error submitting form")
+                            continue
+
                         log("    User found")
                         if resp_submit.status_code != 200:
                             log("    Error submitting")
                             continue
+
                         time.sleep(1)
                         if stop_check and stop_check():
                             return
+
                         soup2 = BeautifulSoup(resp_submit.text, "html.parser")
                         adet_tag = soup2.find("input", {"name": "adet"})
                         adet = adet_tag.get("value", "20") if adet_tag else "20"
@@ -154,12 +170,21 @@ def run(target_username, log_callback=None, stop_check=None):
                         userName = userName_tag.get("value") if userName_tag else None
                         log(f"    Send-followers")
                         log(f"    UserID: {userID}, UserName: {userName}")
+
                         if not userID or not userName:
                             log("    Missing userID/userName")
                             continue
+
                         start_url = f"{base_url}/tools/send-follower/{userID}?formType=send"
                         start_data = {"adet": adet, "userID": userID, "userName": userName}
-                        resp_start = session.post(start_url, data=start_data, timeout=30)
+
+                        # محاولة بدء الإرسال
+                        try:
+                            resp_start = session.post(start_url, data=start_data, timeout=30)
+                        except RequestException:
+                            log("    Connection error starting send")
+                            continue
+
                         try:
                             json_match = re.search(r'\{.*\}', resp_start.text, re.DOTALL)
                             if json_match:
@@ -174,11 +199,18 @@ def run(target_username, log_callback=None, stop_check=None):
                             else:
                                 log("    No JSON response")
                         except Exception as e:
-                            log(f"    JSON parse error: {e}")
+                            log(f"    JSON parse error: {type(e).__name__}")
+
                         time.sleep(1.5)
+
                     except Exception as e:
-                        log(f"    Exception: {type(e).__name__} - {e}")
+                        # معالجة أي استثناء آخر مع تجنب طباعة الروابط
+                        if isinstance(e, RequestException):
+                            log("    Connection error")
+                        else:
+                            log(f"    Error: {type(e).__name__}")
                         continue
+
                     log("  --------------------")
                 log("-----------------------")
             log("\n Waiting 10 seconds...")
@@ -187,7 +219,6 @@ def run(target_username, log_callback=None, stop_check=None):
                     return
                 time.sleep(1)
     finally:
-        # إرسال رسالة التوقف وإيقاف خيط heartbeat
         send_telegram_notification(f"🛑 Stop --- Followers tool for @{target_username}")
         heartbeat_stop.set()
 
