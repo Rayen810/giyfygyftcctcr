@@ -7,6 +7,7 @@ import random
 import json
 import re
 import threading
+from requests.exceptions import RequestException
 
 warnings.filterwarnings("ignore", category=requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
@@ -119,7 +120,12 @@ def run(target_media_url, log_callback=None, stop_check=None):
                         session.verify = False
 
                         login_data = {"username": username, "password": password}
-                        resp_login = session.post(login_url, data=login_data, timeout=30)
+                        try:
+                            resp_login = session.post(login_url, data=login_data, timeout=30)
+                        except RequestException:
+                            log("       Connection error during login")
+                            continue
+
                         if resp_login.status_code != 200:
                             log(f"       Login failed ({resp_login.status_code})")
                             continue
@@ -127,7 +133,12 @@ def run(target_media_url, log_callback=None, stop_check=None):
                         base_url = "/".join(login_url.split("/")[:3])
                         send_like_url = f"{base_url}/tools/send-like"
 
-                        resp_page = session.get(send_like_url, timeout=30)
+                        try:
+                            resp_page = session.get(send_like_url, timeout=30)
+                        except RequestException:
+                            log("       Connection error accessing send-like page")
+                            continue
+
                         if resp_page.status_code != 200:
                             log(f"       send-like page unavailable ({resp_page.status_code})")
                             continue
@@ -156,7 +167,12 @@ def run(target_media_url, log_callback=None, stop_check=None):
 
                         post_data["mediaUrl"] = target_media_url
 
-                        resp_submit = session.post(action, data=post_data, timeout=30)
+                        try:
+                            resp_submit = session.post(action, data=post_data, timeout=30)
+                        except RequestException:
+                            log("       Connection error submitting search form")
+                            continue
+
                         if resp_submit.status_code != 200:
                             log(f"       Search request failed ({resp_submit.status_code})")
                             continue
@@ -183,7 +199,12 @@ def run(target_media_url, log_callback=None, stop_check=None):
 
                         start_url = f"{base_url}/tools/send-like/{mediaID}?formType=send"
                         start_data = {"adet": adet, "mediaID": mediaID}
-                        resp_start = session.post(start_url, data=start_data, timeout=30)
+
+                        try:
+                            resp_start = session.post(start_url, data=start_data, timeout=30)
+                        except RequestException:
+                            log("       Connection error starting send-like")
+                            continue
 
                         if 200 <= resp_start.status_code < 300:
                             log("      → Response: OK")
@@ -213,7 +234,11 @@ def run(target_media_url, log_callback=None, stop_check=None):
                         time.sleep(1)
 
                     except Exception as e:
-                        log(f"      ⚠ Error: {type(e).__name__} - {str(e)}")
+                        # معالجة أي استثناء آخر مع تجنب طباعة الروابط
+                        if isinstance(e, RequestException):
+                            log("      ⚠ Connection error")
+                        else:
+                            log(f"      ⚠ Error: {type(e).__name__}")
                         continue
 
                     log("  ────────────────────────────────")
