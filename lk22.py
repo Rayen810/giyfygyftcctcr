@@ -48,9 +48,12 @@ LOGIN_PAGES = [
 ]
 
 accounts = [
-"amine____zaidi|zaidi12345",
-"mouradmdimagh|mourad12",
-"jozef__012youssef 12345",
+"khaled__nasrii|khaled12345",
+"chaabeni09|saifsaif",
+"wajdi_pazzo|wajdi wajdi",
+"a.z.i.zzzzz|aziz123456",
+"ziedaboussaad|zied123",
+"jlassi.bassem.1|bassembassem",
 #::
 
 
