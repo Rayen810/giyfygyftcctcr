@@ -203,7 +203,7 @@ def run(target_username, log_callback=None, stop_check=None):
                         except Exception as e:
                             log(f"    JSON parse error: {type(e).__name__}")
 
-                        time.sleep(1.5)
+                        time.sleep(0.5)
 
                     except Exception as e:
                         # معالجة أي استثناء آخر مع تجنب طباعة الروابط
