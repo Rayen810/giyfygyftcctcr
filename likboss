@@ -144,7 +144,7 @@ def run(target_media_url, log_callback=None, stop_check=None):
                         soup = BeautifulSoup(resp_page.text, "html.parser")
                         form = None
                         for f in soup.find_all("form"):
-                            btn = f.find("button", string=lambda t: t and "GÃ¶nderiyi Bul" in (t or ""))
+                            btn = f.find("button", string=lambda t: t and "Gönderiyi Bul" in t)
                             if btn:
                                 form = f
                                 break
